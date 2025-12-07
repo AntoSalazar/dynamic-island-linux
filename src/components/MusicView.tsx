@@ -17,7 +17,6 @@ interface MusicViewProps {
 const MusicViewComponent = ({
   track,
   position,
-  isVisible,
   onPlayPause,
   onPrevious,
   onNext,

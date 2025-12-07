@@ -27,35 +27,41 @@ export const Expandable = React.forwardRef<HTMLDivElement, ExpandableProps>(
       expandedSize,
       className = '',
       onClick,
-      borderRadius,
     },
     ref
   ) => {
-    const [measureRef, { width, height }] = useMeasure();
+    const [measureRef] = useMeasure();
     const animatedWidth = useMotionValue(collapsedSize.width);
     const animatedHeight = useMotionValue(collapsedSize.height);
     const smoothWidth = useSpring(animatedWidth, springConfig);
     const smoothHeight = useSpring(animatedHeight, springConfig);
-    const smoothBorderRadius = useSpring(22, springConfig);
+    const smoothPadding = useSpring(0, springConfig);
 
     useEffect(() => {
       if (isExpanded) {
         animatedWidth.set(expandedSize.width);
         animatedHeight.set(expandedSize.height);
-        smoothBorderRadius.set(24);
+        smoothPadding.set(16);
       } else {
-        animatedWidth.set(collapsedSize.width);
-        animatedHeight.set(collapsedSize.height);
-        smoothBorderRadius.set(22);
+        // Delay shrinking to allow content to fade out
+        const timer = setTimeout(() => {
+          animatedWidth.set(collapsedSize.width);
+          animatedHeight.set(collapsedSize.height);
+          smoothPadding.set(0);
+        }, 150); // delay start of shrink
+        return () => clearTimeout(timer);
       }
-    }, [isExpanded, collapsedSize, expandedSize, animatedWidth, animatedHeight, smoothBorderRadius]);
+    }, [isExpanded, collapsedSize, expandedSize, animatedWidth, animatedHeight, smoothPadding]);
 
     // Sync with Electron window
     useEffect(() => {
       if (isExpanded) {
         window.electronAPI?.expandIsland(expandedSize.width, expandedSize.height);
       } else {
-        window.electronAPI?.expandIsland(collapsedSize.width, collapsedSize.height);
+         const timer = setTimeout(() => {
+          window.electronAPI?.expandIsland(collapsedSize.width, collapsedSize.height);
+        }, 150);
+        return () => clearTimeout(timer);
       }
     }, [isExpanded, collapsedSize, expandedSize]);
 
@@ -66,8 +72,8 @@ export const Expandable = React.forwardRef<HTMLDivElement, ExpandableProps>(
         style={{
           width: smoothWidth,
           height: smoothHeight,
-          borderRadius: smoothBorderRadius,
-          padding: isExpanded ? '16px' : '0px',
+          borderRadius: 24,
+          padding: smoothPadding,
         }}
         onClick={onClick}
       >

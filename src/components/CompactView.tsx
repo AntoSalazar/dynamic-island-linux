@@ -8,7 +8,7 @@ interface CompactViewProps {
   isVisible: boolean;
 }
 
-const CompactViewComponent = ({ track, isVisible }: CompactViewProps) => {
+const CompactViewComponent = ({ track }: CompactViewProps) => {
   return (
     <motion.div
       className="w-full h-full flex items-center justify-center relative"
