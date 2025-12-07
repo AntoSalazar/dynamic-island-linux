@@ -4,3 +4,9 @@ build/
 *.log
 .DS_Store
 .env
+
+# Vite
+.vite
+
+# TypeScript
+*.tsbuildinfo

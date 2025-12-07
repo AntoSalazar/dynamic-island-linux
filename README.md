@@ -1,14 +1,15 @@
 # Dynamic Island for Linux
 
-A macOS-inspired Dynamic Island implementation for Linux Mint Cinnamon using Electron.
+A macOS-inspired Dynamic Island implementation for Linux Mint Cinnamon using Electron, React, and Framer Motion.
 
 ## Features
 
-- **Clean, Professional Design**: Glass-morphism UI with smooth animations
+- **Clean, Professional Design**: Modern UI with buttery smooth spring-physics animations
 - **Spotify Integration**: Shows currently playing track via MPRIS D-Bus
 - **Always Visible**: Persistent pill-shaped bar at top of screen
-- **Smart Expansion**: Expands to show music controls and information
+- **Smart Expansion**: Expands with smooth animations to show music controls and information
 - **Native Linux Integration**: Uses D-Bus for system-level communication
+- **Generous Spacing**: Apple-inspired breathing room and professional layout
 
 ## Screenshots
 
@@ -68,9 +69,13 @@ Replace `/path/to/dynamic-island-linux/` with the actual path.
 
 ### Architecture
 
-- **Main Process** (`main.js`): Creates the frameless, transparent window and handles D-Bus communication
-- **Renderer Process** (`src/renderer.js`): Manages UI state and animations
-- **Preload Script** (`preload.js`): Secure bridge between main and renderer processes
+- **Main Process** (`main.cjs`): Creates the frameless, transparent window and handles D-Bus communication
+- **React App** (`src/`): Modern component-based UI with TypeScript
+  - `DynamicIsland.tsx`: Main container with state management
+  - `MusicView.tsx`: Expanded music player view
+  - `CompactView.tsx`: Collapsed pill state
+  - `Expandable.tsx`: Smooth spring animation system
+- **Preload Script** (`preload.cjs`): Secure bridge between main and renderer processes
 
 ### Spotify Integration
 
@@ -85,15 +90,19 @@ Supported media players:
 ### Key Technologies
 
 - **Electron**: Cross-platform desktop app framework
+- **React 19**: Modern component-based UI library
+- **TypeScript**: Type-safe development
+- **Vite**: Fast build tool and dev server
+- **Framer Motion**: Smooth spring-physics animations
+- **Tailwind CSS v4**: Utility-first styling with @import syntax
 - **D-Bus**: Inter-process communication for Linux
-- **CSS Backdrop Filter**: Glass-morphism effect
-- **CSS Transitions**: Smooth state changes
+- **MPRIS**: Media Player Remote Interfacing Specification
 
 ## Customization
 
 ### Positioning
 
-Edit `main.js` to change position:
+Edit `main.cjs` to change position:
 
 ```javascript
 const x = Math.floor((width - ISLAND_WIDTH) / 2);  // Center
@@ -102,38 +111,49 @@ const y = 10;  // Top margin
 
 ### Dimensions
 
-Adjust in `main.js`:
+Adjust in `src/utils/constants.ts`:
 
-```javascript
-const ISLAND_WIDTH = 150;
-const ISLAND_HEIGHT = 37;
-const ISLAND_EXPANDED_WIDTH = 400;
-const ISLAND_EXPANDED_HEIGHT = 100;
+```typescript
+export const DIMENSIONS = {
+  [IslandState.COMPACT]: { width: 170, height: 44 },
+  [IslandState.MUSIC]: { width: 380, height: 200 },
+};
+```
+
+### Animation Physics
+
+Edit `src/components/ui/expandable.tsx` to customize spring behavior:
+
+```typescript
+const springConfig = { stiffness: 200, damping: 20, bounce: 0.2 };
 ```
 
 ### Colors & Styling
 
-Edit `src/styles.css` to customize:
+Edit component files in `src/components/` using Tailwind CSS classes:
 
-- Background: `.island { background: ... }`
-- Gradient: `.pulse-indicator { background: linear-gradient(...) }`
-- Border radius, shadows, animations, etc.
+- Background: `bg-black`, `bg-gradient-to-br`
+- Spacing: `px-12 py-10`, `gap-6`
+- Border radius, shadows, etc.
 
 ## Roadmap
 
+- [x] Smooth spring-physics animations
+- [x] React + TypeScript architecture
+- [x] Media player controls (play/pause/next/prev via D-Bus)
 - [ ] Full notification system integration
-- [ ] Media player controls (play/pause/next/prev via D-Bus)
 - [ ] Multiple notification queue
 - [ ] Calendar/timer integration
 - [ ] System monitoring (CPU, RAM, battery)
 - [ ] Customizable themes
 - [ ] Settings panel
+- [ ] Multi-monitor support
 
 ## Known Issues
 
-- Notification integration is partial (requires notification daemon access)
-- Media player controls are UI-only (need D-Bus command implementation)
+- Notification integration not yet implemented
 - No multi-monitor support yet
+- Requires MPRIS-compatible media player
 
 ## Contributing
 

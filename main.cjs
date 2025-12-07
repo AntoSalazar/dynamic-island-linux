@@ -47,17 +47,21 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadFile('src/index.html');
+  // Load Vite dev server in development, or built files in production
+  const isDev = process.argv.includes('--dev');
+
+  if (isDev) {
+    mainWindow.loadURL('http://localhost:5173');
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
+  } else {
+    mainWindow.loadFile('dist/index.html');
+  }
+
   mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   mainWindow.setAlwaysOnTop(true, 'screen-saver');
 
   // Ignore mouse events on transparent areas
   mainWindow.setIgnoreMouseEvents(false);
-
-  // Development mode
-  if (process.argv.includes('--dev')) {
-    mainWindow.webContents.openDevTools({ mode: 'detach' });
-  }
 }
 
 // Handle window expansion/contraction
